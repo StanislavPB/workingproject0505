@@ -1,0 +1,275 @@
+Написать приложение для ввода и хранения задач пользователя.
+
+1. Работа с пользователем
+- добавить нового пользователя (регистрация)
+- все пользователи обладают либо правами типа user - работа со своими задачами,
+либо правами admin - которые позволяют редактировать данные всех задач и пользователей
+- при добавлении пользователя ему автоматически присваиваются права user
+- при запуске программы создается один пользователь с правами admin
+- посмотреть данные о всех пользователях (в режиме admin)
+- (опционально) внести изменения в пользователя (поменять имя пользователя и / или пароль)
+
+2. Работа с задачами
+- добавить новую задачу
+- посмотреть все задачи текущего пользователя
+- посмотреть все задачи всех пользователей
+- удалить задачу
+- отредактировать задачу (название, описание, deadline)
+- поменять статус задачи (OPEN, CLOSE, PROGRESS)
+
+
+----------------------------------------- Entity ------------------------------------------------------
+
+Entity:
+
+Role (enum):
+-----------
+ADMIN,
+USER
+
+
+User:
+---------
+Integer id;
+String userName;
+String email;
+String password;
+Role role;
+Date createDate;
+Date lastUpdate;
+
+
+TaskStatus (enum):
+------------------
+OPEN,
+PROGRESS,
+CLOSE
+
+Task:
+------
+Integer id;
+String taskName;
+String taskDescription;
+User user;
+Date createDate;
+Date lastUpdate;
+Date deadline;
+TaskStatus status;
+
+----------------------------------------- DTO ------------------------------------------------------
+
+
+1. UserRequestDto
+
+String userName;
+String email;
+String password;
+
+
+2. UserResponseDto
+
+Integer id;
+String userName;
+String email;
+String role;
+
+
+3. TaskRequestDto
+
+String taskName;
+String taskDescription;
+Integer userId;
+String deadline;
+
+4. TaskResponseDto
+
+Integer id;
+String taskName;
+String taskDescription;
+String userName;
+String deadline;
+String status;
+
+
+----------------------------------------- API ------------------------------------------------------
+
+REST-style naming conventions - общие правила наименования пути (endpoints) и методов
+
+1) Пути - существительные, а не глаголы
+
+НЕ ДЕЛАЕМ :
+/getUsers
+/createUser
+/deleteTask
+
+ДЕЛАЕМ:
+/users
+/tasks
+
+Так как HTTP-метод УЖЕ показывает действие:
+- GET /users -> получить список всех пользователей
+- POST /users -> создать пользователя
+
+
+2) Используем множественное число для коллекций
+/users - все пользователи
+/tasks - все задачи
+
+3) для одного объекта указываем id
+
+GET /users/3 -> получить пользователя с id=3
+DELETE /users/5 -> удалить пользователя с id=5
+
+4) Вложенные ресурсы:
+Если задача относится к конкретному пользователю:
+GET /users/3/tasks -> все задачи пользователя с id=3
+
+5) Дополнительные (нестандартные) действия (осторожно с наименованием) - когда операции,
+которые "не вписываются" в CRUD.
+
+/tasks/10/close -> изменить статус задачи с id=10 на CLOSE
+
+но лучше сделать так:
+
+PATCH /tasks/10
+{
+    "status":"CLOSE"
+}
+
+6) по умолчанию формат данных: application/json
+
+
+
+Правила наименований методов:
+- используем глаголы
+
+Репозиторий (findById, save, deleteById)
+Service (registerUser, createTask, changeTaskStatus)
+Controller (getAllUsers, createTask, deleteTask)
+
+
+------------- user -----------
+
+/api/users
+
+
+    // авторизация пользователя
+    @PostMapping
+    public boolean getAuthorize(@BodyRequest UserLogin login) {
+        // проводим аутентификацию (проверяем права пользователя)
+    }
+
+    // Получить список всех пользователей (доступно только админу)
+    @GetMapping
+    public List<UserResponseDto> getAllUsers() {
+        // Возвращает список всех пользователей системы
+    }
+
+    // Получить данные конкретного пользователя по id
+    @GetMapping("/{id}")
+    public UserResponseDto getUser(@PathVariable Long id) {
+        // Возвращает пользователя по его идентификатору
+    }
+
+    // Зарегистрировать нового пользователя
+    @PostMapping
+    public UserResponseDto createUser(@RequestBody UserRequestDto request) {
+        // Создает нового пользователя с ролью USER
+    }
+
+    // Обновить данные пользователя (логин и/или пароль)
+    @PatchMapping("/{id}")
+    public UserResponseDto updateUser(@PathVariable Long id, @RequestBody UserUpdateRequestDto request) {
+        // Вносит изменения в существующего пользователя
+    }
+
+    // Удалить пользователя по id (доступно только для admin)
+    @DeleteMapping("/{id}")
+    public UserResponseDto deleteUser(@PathVariable Long id) {
+        // Удаляет пользователя из системы
+    }
+
+
+UserUpdateRequestDto
+
+String email;
+String password;
+
+----------- task ----------
+
+
+    // Получить список всех задач
+    @GetMapping
+    public List<TaskResponseDto> getAllTasks() {
+        // Если текущий пользователь — admin → все задачи
+        // Если обычный user → только свои задачи
+    }
+
+    // Получить задачу по id
+    @GetMapping("/{id}")
+    public TaskResponseDto getTask(@PathVariable Long id) {
+        // Возвращает одну задачу по её идентификатору
+    }
+
+    // Создать новую задачу
+    @PostMapping
+    public TaskResponseDto createTask(@RequestBody TaskRequestDto request) {
+        // Добавляет новую задачу для текущего пользователя
+    }
+
+    // Обновить данные задачи (название, описание, дедлайн)
+    @PatchMapping("/{id}")
+    public TaskResponseDto updateTask(@PathVariable Long id, @RequestBody TaskRequestDto request) {
+        // Вносит изменения в задачу (если владелец или admin)
+    }
+
+    // Удалить задачу по id
+    @DeleteMapping("/{id}")
+    public TaskResponseDto deleteTask(@PathVariable Long id) {
+        // Удаляет задачу (если владелец или admin)
+    }
+
+    // Изменить статус задачи (OPEN, PROGRESS, CLOSE)
+    @PatchMapping("/{id}/status")
+    public TaskResponseDto changeTaskStatus(@PathVariable Long id, @RequestBody StatusUpdateRequest request) {
+        // Меняет статус задачи (например, из OPEN в PROGRESS или CLOSE)
+    }
+}
+
+
+
+StatusUpdateRequest
+
+String status; // OPEN, PROGRESS, CLOSE
+
+
+
+Вопрос:
+При обновлении данных о пользователе мы получаем:
+public class UserUpdateRequestDto {
+    private Integer id;
+    private String userName;
+    private String password;
+}
+
+Сценарий внесения изменений:
+Сервис, который получает эти данные, создает нового User в котором заполнены ТОЛЬКО
+три поля - email отсутствует.
+Далее вызывается метод update из репозитория куда передается этот user.
+Репозиторий берет id из него и запрашивает "найди по id".
+Если в базе найден пользователь с таким id - то мы в нем меняем значения полей
+    private String userName;
+    private String password;
+
+    на новые.
+
+    И возвращаем в сервис информацию о user но уже с обновленными данными.
+
+    Если такого id нет в системе, то либо мы отправляем пусто Optional, либо
+    мы отправляем пустого User в котором ВСЕ поля - пустые.
+    Тем самым мы сообщаем сервису, что ничего не обновили.
+
+
+
+
+
