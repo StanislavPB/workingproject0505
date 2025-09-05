@@ -109,6 +109,17 @@ public class UserService {
         }
     }
 
+
+    public Optional<User> getUserByIdForTaskService(Integer id){
+        Optional<User> userByIdOptional = repository.findById(id);
+
+        if (userByIdOptional.isPresent()) {
+            return userByIdOptional;
+        } else {
+            return Optional.empty();
+        }
+    }
+
     public GeneralResponse<UserResponseDto> getUserByEmail(String email){
         Optional<User> userByEmailOptional = repository.findByEmail(email);
 

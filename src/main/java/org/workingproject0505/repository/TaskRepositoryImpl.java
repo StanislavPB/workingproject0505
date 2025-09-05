@@ -57,14 +57,6 @@ public class TaskRepositoryImpl implements TaskRepository{
                 .findFirst();
     }
 
-    @Override
-    public List<Task> expiredDeadline() {
-        LocalDate today = LocalDate.now();
-
-        return tasks.stream()
-                .filter(task -> task.getDeadline().isBefore(today))
-                .toList();
-    }
 
     @Override
     public List<Task> findByDateAfter(LocalDate date) {

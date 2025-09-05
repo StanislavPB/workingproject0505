@@ -17,8 +17,6 @@ public interface TaskRepository {
 
     Optional<Task> findById(Integer id);
 
-    List<Task> expiredDeadline();
-
     List<Task> findByDateAfter(LocalDate date);
 
     List<Task> findByDateBefore(LocalDate date);
