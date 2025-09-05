@@ -9,8 +9,6 @@ public interface UserRepository {
 
     User save(User user);
 
-    Optional<User> updateUser(User user);
-
     Optional<User> deleteById(Integer id);
 
     List<User> findAll();
