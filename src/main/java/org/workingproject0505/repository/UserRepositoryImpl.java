@@ -1,12 +1,13 @@
 package org.workingproject0505.repository;
 
+import org.springframework.stereotype.Repository;
 import org.workingproject0505.entity.User;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-
+@Repository
 public class UserRepositoryImpl implements UserRepository {
 
     private final List<User> users;

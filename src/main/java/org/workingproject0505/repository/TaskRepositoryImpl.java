@@ -1,5 +1,7 @@
 package org.workingproject0505.repository;
 
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Repository;
 import org.workingproject0505.entity.Task;
 import org.workingproject0505.entity.User;
 
@@ -8,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class TaskRepositoryImpl implements TaskRepository{
 
     private final List<Task> tasks;
