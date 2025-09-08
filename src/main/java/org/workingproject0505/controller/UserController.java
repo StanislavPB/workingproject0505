@@ -26,10 +26,10 @@ public class UserController {
 
 
     // Получить всех пользователей (пользовательский режим)
-    @GetMapping
-    public GeneralResponse<List<UserResponseDto>> getAll(){
-        return service.getAll();
-    }
+//    @GetMapping
+//    public GeneralResponse<List<UserResponseDto>> getAll(){
+//        return service.getAll();
+//    }
 
     // Получить всех пользователей (пользовательский режим)
     @GetMapping("/admin")
