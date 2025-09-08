@@ -11,6 +11,7 @@ import org.workingproject0505.entity.Role;
 import org.workingproject0505.entity.User;
 import org.workingproject0505.repository.UserRepository;
 import org.workingproject0505.service.util.UserConverter;
+import org.workingproject0505.service.validation.UserValidation;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,8 +23,25 @@ public class UserService {
 
     private final UserRepository repository;
     private final UserConverter converter;
+    private final UserValidation userValidation;
 
     public GeneralResponse<UserResponseDto> createUser(UserRequestDto request){
+
+        List<String> validationErrors = userValidation.validate(request);
+
+        if (!validationErrors.isEmpty()) {
+            String errorMessage = "";
+            for (String currentError : validationErrors) {
+                errorMessage = errorMessage + "\n" + currentError;
+            }
+            return new GeneralResponse<>(HttpStatus.BAD_REQUEST, null, errorMessage);
+        }
+
+        Optional<User> userByEmailOptional = repository.findByEmail(request.getEmail());
+
+        if (userByEmailOptional.isPresent()) {
+            return new GeneralResponse<>(HttpStatus.BAD_REQUEST, null, "Пользователь с email: " + request.getEmail() + " уже существует");
+        }
 
         User user = converter.fromDto(request);
         user.setRole(Role.USER);
