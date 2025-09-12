@@ -35,7 +35,7 @@ public class TaskConverter {
 
         TaskResponseDto dto = new TaskResponseDto();
         dto.setId(task.getId());
-        dto.setTaskDescription(task.getTaskName());
+        dto.setTaskName(task.getTaskName());
         dto.setTaskDescription(task.getTaskDescription());
         dto.setUserName(task.getUser().getUserName());
         dto.setDeadline(task.getDeadline().toString());
