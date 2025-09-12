@@ -40,6 +40,7 @@ public class TaskService {
         User taskUser = taskUserOptional.get();
 
         Task task = converter.fromDto(request);
+
         task.setUser(taskUser);
 
         LocalDate today = LocalDate.now();
@@ -50,6 +51,10 @@ public class TaskService {
         task.setStatus(TaskStatus.OPEN);
 
         Task savedTask = repository.save(task);
+
+        //taskUser.getTasks().add(task); // НЕЗАБЫТЬ !!! что в список задач пользователя необходимо добавить новую задачу
+
+        taskUser.addTask(task); // - то же самое, но с помощью хелпера
 
         return new GeneralResponse<>(HttpStatus.CREATED, converter.toDto(savedTask), "Новая задача успешно создана");
 
@@ -71,9 +76,7 @@ public class TaskService {
 
     public GeneralResponse<List<TaskResponseDto>> getAllTasksAdmin() {
         List<Task> allTasks = repository.findAll();
-        List<TaskResponseDto> response = allTasks.stream()
-                .map(task -> converter.toDto(task))
-                .toList();
+        List<TaskResponseDto> response = converter.toDtos(allTasks);
         return new GeneralResponse<>(HttpStatus.OK, response, "Список всех задач");
     }
 
@@ -87,9 +90,8 @@ public class TaskService {
         } else {
             List<Task> allTasksByUser = repository.findByUser(userByIdOptional.get());
 
-            List<TaskResponseDto> response = allTasksByUser.stream()
-                    .map(task -> converter.toDto(task))
-                    .toList();
+            List<TaskResponseDto> response = converter.toDtos(allTasksByUser);
+
             return new GeneralResponse<>(HttpStatus.OK, response, "Список всех задач для пользователя с id = " + userId);
         }
     }
@@ -109,11 +111,9 @@ public class TaskService {
     public GeneralResponse<List<TaskResponseDto>> getTasksWithExpireDeadline() {
         LocalDate today = LocalDate.now();
 
-        List<Task> tasksWithExpireDeadline = repository.findByDateBefore(today);
+        List<Task> tasksWithExpireDeadline = repository.findByDeadlineBefore(today);
 
-        List<TaskResponseDto> response = tasksWithExpireDeadline.stream()
-                .map(task -> converter.toDto(task))
-                .toList();
+        List<TaskResponseDto> response = converter.toDtos(tasksWithExpireDeadline);
 
         return new GeneralResponse<>(HttpStatus.OK, response, "Список просроченных задач");
     }
@@ -121,11 +121,9 @@ public class TaskService {
     public GeneralResponse<List<TaskResponseDto>> getTasksByDateAfter(String date) {
         LocalDate searchDate = LocalDate.parse(date);
 
-        List<Task> tasksWithExpireDeadline = repository.findByDateAfter(searchDate);
+        List<Task> tasksWithExpireDeadline = repository.findByDeadlineAfter(searchDate);
 
-        List<TaskResponseDto> response = tasksWithExpireDeadline.stream()
-                .map(task -> converter.toDto(task))
-                .toList();
+        List<TaskResponseDto> response = converter.toDtos(tasksWithExpireDeadline);
 
         return new GeneralResponse<>(HttpStatus.OK, response, "Список задач со сроком выполнения после " + date);
     }
@@ -133,11 +131,9 @@ public class TaskService {
     public GeneralResponse<List<TaskResponseDto>> getTasksByDateBefore(String date) {
         LocalDate searchDate = LocalDate.parse(date);
 
-        List<Task> tasksWithExpireDeadline = repository.findByDateBefore(searchDate);
+        List<Task> tasksWithExpireDeadline = repository.findByDeadlineBefore(searchDate);
 
-        List<TaskResponseDto> response = tasksWithExpireDeadline.stream()
-                .map(task -> converter.toDto(task))
-                .toList();
+        List<TaskResponseDto> response = converter.toDtos(tasksWithExpireDeadline);
 
         return new GeneralResponse<>(HttpStatus.OK, response, "Список задач со сроком выполнения до " + date);
     }
@@ -145,11 +141,9 @@ public class TaskService {
 
     public GeneralResponse<List<TaskResponseDto>> getTasksByTaskNameContent(String taskName){
 
-        List<Task> tasksByTaskName = repository.findByTaskNameContent(taskName);
+        List<Task> tasksByTaskName = repository.findByTaskNameContainingIgnoreCase(taskName);
 
-        List<TaskResponseDto> response = tasksByTaskName.stream()
-                .map(task -> converter.toDto(task))
-                .toList();
+        List<TaskResponseDto> response = converter.toDtos(tasksByTaskName);
 
         return new GeneralResponse<>(HttpStatus.OK, response, "Список задач названием, содержащим " + taskName);
     }

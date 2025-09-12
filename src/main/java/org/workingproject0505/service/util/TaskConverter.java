@@ -6,6 +6,7 @@ import org.workingproject0505.dto.TaskResponseDto;
 import org.workingproject0505.entity.Task;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Component
 public class TaskConverter {
@@ -42,5 +43,11 @@ public class TaskConverter {
 
         return dto;
 
+    }
+
+    public List<TaskResponseDto> toDtos(List<Task> tasks) {
+        return tasks.stream()
+                .map(task -> toDto(task))
+                .toList();
     }
 }
