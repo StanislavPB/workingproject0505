@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.workingproject0505.dto.GeneralResponse;
+import org.workingproject0505.dto.StatusUpdateRequest;
 import org.workingproject0505.dto.TaskRequestDto;
 import org.workingproject0505.dto.TaskResponseDto;
 import org.workingproject0505.entity.Task;
@@ -146,6 +147,25 @@ public class TaskService {
         List<TaskResponseDto> response = converter.toDtos(tasksByTaskName);
 
         return new GeneralResponse<>(HttpStatus.OK, response, "Список задач названием, содержащим " + taskName);
+    }
+
+    public GeneralResponse<String> updateTaskStatus(Integer taskId, StatusUpdateRequest request) {
+        Optional<Task> taskByIdOptional = repository.findById(taskId);
+
+        if (taskByIdOptional.isEmpty()) {
+            return new GeneralResponse<>(HttpStatus.NOT_FOUND, null, "Задача с id = " + taskId + " не найдена");
+        } else {
+
+            TaskStatus newStatus = TaskStatus.valueOf(request.getStatus());
+
+            Task task = taskByIdOptional.get();
+
+            task.setStatus(newStatus);
+
+            repository.save(task);
+
+            return new GeneralResponse<>(HttpStatus.OK, "Статус успешно изменен", "Задача с id = " + taskId);
+        }
     }
 
 }
