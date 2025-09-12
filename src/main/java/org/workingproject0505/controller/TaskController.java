@@ -36,4 +36,16 @@ public class TaskController {
     public GeneralResponse<List<TaskResponseDto>> getUserTasks(@PathVariable Integer userId) {
         return taskService.getAllTasksUser(userId);
     }
+
+    @GetMapping("/admin")
+    public GeneralResponse<List<TaskResponseDto>> getAllTasksAdminMode(){
+        return taskService.getAllTasksAdmin();
+    }
+
+
+    @GetMapping("/context")
+    public GeneralResponse<List<TaskResponseDto>> getAllTasksByContext(@RequestParam String searchText){
+        return taskService.getTasksByTaskNameContent(searchText);
+    }
+
 }

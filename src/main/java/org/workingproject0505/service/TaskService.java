@@ -155,7 +155,6 @@ public class TaskService {
         if (taskByIdOptional.isEmpty()) {
             return new GeneralResponse<>(HttpStatus.NOT_FOUND, null, "Задача с id = " + taskId + " не найдена");
         } else {
-
             TaskStatus newStatus = TaskStatus.valueOf(request.getStatus());
 
             Task task = taskByIdOptional.get();
