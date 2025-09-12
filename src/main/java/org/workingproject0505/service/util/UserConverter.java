@@ -5,6 +5,8 @@ import org.workingproject0505.dto.UserRequestDto;
 import org.workingproject0505.dto.UserResponseDto;
 import org.workingproject0505.entity.User;
 
+import java.util.List;
+
 @Component
 public class UserConverter {
 
@@ -27,4 +29,12 @@ public class UserConverter {
 
         return response;
     }
+
+
+    public List<UserResponseDto> toDtos(List<User> users){
+        return users.stream()
+                .map(user -> toDto(user))
+                .toList();
+    }
+
 }

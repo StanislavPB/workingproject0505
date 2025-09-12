@@ -32,6 +32,8 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks = new ArrayList<>();
 
+    /*
+
     // хелпер для двусторонней связи
     public void addTask(Task task){
         task.setUser(this);
@@ -39,6 +41,9 @@ public class User {
     }
 
     public void removeTask(Task task){
-
+        task.setUser(null);
+        tasks.remove(task);
     }
+
+     */
 }

@@ -107,11 +107,17 @@ public class UserService {
 //
 //        return response;
 
-        List<UserResponseDto> response =  repository.findAll().stream()
-                .map(user -> converter.toDto(user))
-                .toList();
+        List<UserResponseDto> response = converter.toDtos(repository.findAll());
 
-        return new GeneralResponse<>(HttpStatus.OK, response, "Список пользователей (режим пользователя)");
+        String message = "";
+
+        if (response.isEmpty()) {
+            message = "Список пользователей пуст";
+        } else {
+            message = "Список пользователей (режим пользователя)";
+        }
+
+        return new GeneralResponse<>(HttpStatus.OK, response, message);
     }
 
 
@@ -150,14 +156,14 @@ public class UserService {
         }
     }
 
+
     public GeneralResponse<List<UserResponseDto>> getUserByRole(String role){
-        List<User> userByRole = repository.findByRole(role);
+        Role userRole = Role.valueOf(role);
 
+        List<User> usersByRole = repository.findByRole(userRole);
 
-        if (!userByRole.isEmpty()) {
-           List<UserResponseDto> response = userByRole.stream()
-                   .map(user -> converter.toDto(user))
-                   .toList();
+        if (!usersByRole.isEmpty()) {
+           List<UserResponseDto> response = converter.toDtos(usersByRole);
 
             return new GeneralResponse<>(HttpStatus.OK, response, "Пользователи с ролью: " + role);
         } else {
@@ -167,18 +173,29 @@ public class UserService {
 
     public GeneralResponse<List<UserResponseDto>> getUserByUsername(String username){
 
-        List<User> userByUsername= repository.findByName(username);
+        List<User> usersByUsername= repository.findByUserName(username);
 
 
-        if (!userByUsername.isEmpty()) {
-            List<UserResponseDto> response = userByUsername.stream()
-                    .map(user -> converter.toDto(user))
-                    .toList();
+        if (!usersByUsername.isEmpty()) {
+            List<UserResponseDto> response = converter.toDtos(usersByUsername);
 
             return new GeneralResponse<>(HttpStatus.OK, response, "Пользователи с именем: " + username);
         } else {
             return new GeneralResponse<>(HttpStatus.NOT_FOUND, null, "Пользователи с именем:  " + username + " не найдены");
         }
+    }
+
+    public GeneralResponse<UserResponseDto> deleteUser(Integer id){
+
+        Optional<User> userForDeleteOptional = repository.findById(id);
+
+        if (userForDeleteOptional.isEmpty()){
+            return new GeneralResponse<>(HttpStatus.NOT_FOUND, null, "Пользователь с id = " + id + " не найден");
+        }
+
+        repository.deleteById(id);
+
+        return new GeneralResponse<>(HttpStatus.OK, converter.toDto(userForDeleteOptional.get()), "Пользователь с id = " + id + " успешно удален");
     }
 
 }
