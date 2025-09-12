@@ -1,12 +1,14 @@
 package org.workingproject0505.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 import org.workingproject0505.entity.Task;
 import org.workingproject0505.entity.User;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
 
 public interface TaskRepository extends JpaRepository<Task, Integer> {
 

@@ -31,4 +31,14 @@ public class User {
     // определить связь User - Task
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks = new ArrayList<>();
+
+    // хелпер для двусторонней связи
+    public void addTask(Task task){
+        task.setUser(this);
+        tasks.add(task);
+    }
+
+    public void removeTask(Task task){
+
+    }
 }
