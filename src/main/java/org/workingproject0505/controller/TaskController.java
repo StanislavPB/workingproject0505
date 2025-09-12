@@ -49,4 +49,9 @@ public class TaskController {
     }
 
 
+    @GetMapping("/{id}")
+    public GeneralResponse<TaskResponseDto> getTaskById(@PathVariable Integer id){
+        return taskService.getTaskById(id);
+    }
+
 }

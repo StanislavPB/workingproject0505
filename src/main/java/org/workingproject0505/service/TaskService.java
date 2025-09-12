@@ -98,7 +98,7 @@ public class TaskService {
     }
 
 
-    public GeneralResponse<TaskResponseDto> getTakById(Integer taskId){
+    public GeneralResponse<TaskResponseDto> getTaskById(Integer taskId){
         Optional<Task> taskByIdOptional = repository.findById(taskId);
 
         if (taskByIdOptional.isEmpty()) {
