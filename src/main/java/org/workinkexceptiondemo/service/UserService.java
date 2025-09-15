@@ -124,16 +124,12 @@ public class UserService {
     }
 
 
-    public GeneralResponse<UserResponseDto> getUserById(Integer id){
-        Optional<User> userByIdOptional = repository.findById(id);
+    public UserResponseDto getUserById(Integer id){
 
-        if (userByIdOptional.isPresent()) {
-            User userById = userByIdOptional.get();
-            UserResponseDto response = converter.toDto(userById);
-            return new GeneralResponse<>(HttpStatus.OK, response, "Пользователь найден");
-        } else {
-            return new GeneralResponse<>(HttpStatus.NOT_FOUND, null, "Пользователь с id = " + id + " не найден");
-        }
+        return repository.findById(id)
+                .map(user -> converter.toDto(user))
+                .orElseThrow(() -> new NotFoundException("Пользователь с id = " + id + " не найден"));
+
     }
 
 
