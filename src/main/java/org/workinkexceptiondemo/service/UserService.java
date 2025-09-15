@@ -1,17 +1,21 @@
-package org.workingproject0505.service;
+package org.workinkexceptiondemo.service;
+
+
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.workingproject0505.dto.GeneralResponse;
-import org.workingproject0505.dto.UserRequestDto;
-import org.workingproject0505.dto.UserResponseDto;
-import org.workingproject0505.dto.UserUpdateRequestDto;
-import org.workingproject0505.entity.Role;
-import org.workingproject0505.entity.User;
-import org.workingproject0505.repository.UserRepository;
-import org.workingproject0505.service.util.UserConverter;
-import org.workingproject0505.service.validation.UserValidation;
+import org.workinkexceptiondemo.dto.GeneralResponse;
+import org.workinkexceptiondemo.dto.UserRequestDto;
+import org.workinkexceptiondemo.dto.UserResponseDto;
+import org.workinkexceptiondemo.dto.UserUpdateRequestDto;
+import org.workinkexceptiondemo.entity.Role;
+import org.workinkexceptiondemo.entity.User;
+import org.workinkexceptiondemo.repository.RoleRepository;
+import org.workinkexceptiondemo.repository.UserRepository;
+import org.workinkexceptiondemo.service.exception.NotFoundException;
+import org.workinkexceptiondemo.service.util.UserConverter;
+import org.workinkexceptiondemo.service.validation.UserValidation;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,6 +28,7 @@ public class UserService {
     private final UserRepository repository;
     private final UserConverter converter;
     private final UserValidation userValidation;
+    private final RoleRepository roleRepository;
 
     public GeneralResponse<UserResponseDto> createUser(UserRequestDto request){
 
@@ -44,7 +49,17 @@ public class UserService {
         }
 
         User user = converter.fromDto(request);
-        user.setRole(Role.USER);
+        Optional<Role> defaultRoleOptional = roleRepository.findByRoleName("USER");
+
+        Role defRole = new Role("USER");
+
+
+        if (defaultRoleOptional.isEmpty()) {
+            throw new NotFoundException("Default role not found in the database");
+        } else {
+            Role defaultRole = defaultRoleOptional.get();
+            user.setRole(defaultRole);
+        }
 
         LocalDate today = LocalDate.now();
 
@@ -158,7 +173,7 @@ public class UserService {
 
 
     public GeneralResponse<List<UserResponseDto>> getUserByRole(String role){
-        Role userRole = Role.valueOf(role);
+        Role userRole = roleRepository.findByRoleName(role).get();
 
         List<User> usersByRole = repository.findByRole(userRole);
 

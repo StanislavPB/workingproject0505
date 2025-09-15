@@ -1,4 +1,4 @@
-package org.workingproject0505.entity;
+package org.workinkexceptiondemo.entity;
 
 public enum TaskStatus {
     OPEN,

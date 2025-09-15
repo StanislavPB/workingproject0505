@@ -1,14 +1,15 @@
 
-package org.workingproject0505.controller;
+package org.workinkexceptiondemo.controller;
+
+
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.workingproject0505.dto.GeneralResponse;
-import org.workingproject0505.dto.StatusUpdateRequest;
-import org.workingproject0505.dto.TaskRequestDto;
-import org.workingproject0505.dto.TaskResponseDto;
-import org.workingproject0505.service.TaskService;
+import org.workinkexceptiondemo.dto.GeneralResponse;
+import org.workinkexceptiondemo.dto.StatusUpdateRequest;
+import org.workinkexceptiondemo.dto.TaskRequestDto;
+import org.workinkexceptiondemo.dto.TaskResponseDto;
+import org.workinkexceptiondemo.service.TaskService;
 
 import java.util.List;
 
@@ -20,12 +21,12 @@ public class TaskController {
     private final TaskService taskService;
 
     @PostMapping("/create")
-    public GeneralResponse<TaskResponseDto> createTask(@RequestBody TaskRequestDto dto) {
+    public TaskResponseDto createTask(@RequestBody TaskRequestDto dto) {
         return taskService.createTask(dto);
     }
 
     @PutMapping("/{taskId}/status")
-    public GeneralResponse<String> updateTaskStatus(
+    public String updateTaskStatus(
             @PathVariable Integer taskId,
             @RequestBody StatusUpdateRequest dto) {
         return taskService.updateTaskStatus(taskId, dto);
@@ -33,24 +34,24 @@ public class TaskController {
 
 
     @GetMapping("/user/{userId}")
-    public GeneralResponse<List<TaskResponseDto>> getUserTasks(@PathVariable Integer userId) {
+    public List<TaskResponseDto> getUserTasks(@PathVariable Integer userId) {
         return taskService.getAllTasksUser(userId);
     }
 
     @GetMapping("/admin")
-    public GeneralResponse<List<TaskResponseDto>> getAllTasksAdminMode(){
+    public List<TaskResponseDto> getAllTasksAdminMode(){
         return taskService.getAllTasksAdmin();
     }
 
 
     @GetMapping("/context")
-    public GeneralResponse<List<TaskResponseDto>> getAllTasksByContext(@RequestParam String searchText){
+    public List<TaskResponseDto> getAllTasksByContext(@RequestParam String searchText){
         return taskService.getTasksByTaskNameContent(searchText);
     }
 
 
     @GetMapping("/{id}")
-    public GeneralResponse<TaskResponseDto> getTaskById(@PathVariable Integer id){
+    public TaskResponseDto getTaskById(@PathVariable Integer id){
         return taskService.getTaskById(id);
     }
 

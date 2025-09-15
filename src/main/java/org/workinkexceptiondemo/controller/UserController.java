@@ -1,13 +1,16 @@
-package org.workingproject0505.controller;
+package org.workinkexceptiondemo.controller;
+
+
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.workingproject0505.dto.GeneralResponse;
-import org.workingproject0505.dto.UserRequestDto;
-import org.workingproject0505.dto.UserResponseDto;
-import org.workingproject0505.dto.UserUpdateRequestDto;
-import org.workingproject0505.entity.User;
-import org.workingproject0505.service.UserService;
+import org.workinkexceptiondemo.dto.GeneralResponse;
+import org.workinkexceptiondemo.dto.UserRequestDto;
+import org.workinkexceptiondemo.dto.UserResponseDto;
+import org.workinkexceptiondemo.dto.UserUpdateRequestDto;
+import org.workinkexceptiondemo.entity.User;
+import org.workinkexceptiondemo.service.UserService;
 
 import java.util.List;
 
@@ -72,5 +75,6 @@ public class UserController {
         return service.getAll();
 
     }
+
 
 }

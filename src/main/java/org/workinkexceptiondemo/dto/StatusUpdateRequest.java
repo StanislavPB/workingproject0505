@@ -1,4 +1,4 @@
-package org.workingproject0505.dto;
+package org.workinkexceptiondemo.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

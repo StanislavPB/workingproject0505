@@ -1,7 +1,8 @@
-package org.workingproject0505.service.validation;
+package org.workinkexceptiondemo.service.validation;
+
 
 import org.springframework.stereotype.Service;
-import org.workingproject0505.dto.UserRequestDto;
+import org.workinkexceptiondemo.dto.UserRequestDto;
 
 import java.util.ArrayList;
 import java.util.List;

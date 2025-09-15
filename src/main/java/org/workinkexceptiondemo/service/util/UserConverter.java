@@ -1,9 +1,9 @@
-package org.workingproject0505.service.util;
+package org.workinkexceptiondemo.service.util;
 
 import org.springframework.stereotype.Component;
-import org.workingproject0505.dto.UserRequestDto;
-import org.workingproject0505.dto.UserResponseDto;
-import org.workingproject0505.entity.User;
+import org.workinkexceptiondemo.dto.UserRequestDto;
+import org.workinkexceptiondemo.dto.UserResponseDto;
+import org.workinkexceptiondemo.entity.User;
 
 import java.util.List;
 

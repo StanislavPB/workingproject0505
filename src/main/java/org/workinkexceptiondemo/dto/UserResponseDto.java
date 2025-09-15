@@ -1,11 +1,9 @@
-package org.workingproject0505.dto;
+package org.workinkexceptiondemo.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.workingproject0505.entity.Role;
 
-import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor

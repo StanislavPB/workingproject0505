@@ -1,8 +1,9 @@
-package org.workingproject0505.repository;
+package org.workinkexceptiondemo.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.workingproject0505.entity.Role;
-import org.workingproject0505.entity.User;
+import org.workinkexceptiondemo.entity.Role;
+import org.workinkexceptiondemo.entity.User;
+
 
 import java.util.List;
 import java.util.Optional;

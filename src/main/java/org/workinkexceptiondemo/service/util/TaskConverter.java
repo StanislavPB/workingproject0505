@@ -1,9 +1,10 @@
-package org.workingproject0505.service.util;
+package org.workinkexceptiondemo.service.util;
 
 import org.springframework.stereotype.Component;
-import org.workingproject0505.dto.TaskRequestDto;
-import org.workingproject0505.dto.TaskResponseDto;
-import org.workingproject0505.entity.Task;
+import org.workinkexceptiondemo.dto.TaskRequestDto;
+import org.workinkexceptiondemo.dto.TaskResponseDto;
+import org.workinkexceptiondemo.entity.Task;
+
 
 import java.time.LocalDate;
 import java.util.List;

@@ -1,4 +1,4 @@
-package org.workingproject0505.entity;
+package org.workinkexceptiondemo.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

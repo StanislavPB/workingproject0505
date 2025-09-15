@@ -1,13 +1,13 @@
-package org.workingproject0505;
+package org.workinkexceptiondemo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class Workingproject0505Application {
+public class WorkinkExceptionDemoApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(Workingproject0505Application.class, args);
+        SpringApplication.run(WorkinkExceptionDemoApplication.class, args);
     }
 
 }

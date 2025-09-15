@@ -1,4 +1,4 @@
-package org.workingproject0505.entity;
+package org.workinkexceptiondemo.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -21,10 +21,12 @@ public class User {
     private String userName;
     private String email;
     private String password;
+
     // одна роль у пользователя
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "role_id")
     private Role role;
+
     private LocalDate createDate;
     private LocalDate lastUpdate;
 

@@ -1,17 +1,19 @@
-package org.workingproject0505.service;
+package org.workinkexceptiondemo.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.workingproject0505.dto.GeneralResponse;
-import org.workingproject0505.dto.StatusUpdateRequest;
-import org.workingproject0505.dto.TaskRequestDto;
-import org.workingproject0505.dto.TaskResponseDto;
-import org.workingproject0505.entity.Task;
-import org.workingproject0505.entity.TaskStatus;
-import org.workingproject0505.entity.User;
-import org.workingproject0505.repository.TaskRepository;
-import org.workingproject0505.service.util.TaskConverter;
+import org.workinkexceptiondemo.dto.GeneralResponse;
+import org.workinkexceptiondemo.dto.StatusUpdateRequest;
+import org.workinkexceptiondemo.dto.TaskRequestDto;
+import org.workinkexceptiondemo.dto.TaskResponseDto;
+import org.workinkexceptiondemo.entity.Task;
+import org.workinkexceptiondemo.entity.TaskStatus;
+import org.workinkexceptiondemo.entity.User;
+import org.workinkexceptiondemo.repository.TaskRepository;
+import org.workinkexceptiondemo.service.exception.NotFoundException;
+import org.workinkexceptiondemo.service.util.TaskConverter;
+
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,7 +29,7 @@ public class TaskService {
     private final TaskConverter converter;
 
 
-    public GeneralResponse<TaskResponseDto> createTask(TaskRequestDto request) {
+    public TaskResponseDto createTask(TaskRequestDto request) {
 /*
 
 - найти нужного user
@@ -35,7 +37,7 @@ public class TaskService {
         Optional<User> taskUserOptional = service.getUserByIdForTaskService(request.getUserId());
 
         if (taskUserOptional.isEmpty()) {
-            return new GeneralResponse<>(HttpStatus.NOT_FOUND, null, "Невозможно создать задачу для незарегистрированного пользователя. Пользователь с id = " + request.getUserId() + " не найден");
+            throw  new NotFoundException("Невозможно создать задачу для незарегистрированного пользователя. Пользователь с id = " + request.getUserId() + " не найден");
         }
 
         User taskUser = taskUserOptional.get();
@@ -57,36 +59,36 @@ public class TaskService {
 
         taskUser.addTask(task); // - то же самое, но с помощью хелпера
 
-        return new GeneralResponse<>(HttpStatus.CREATED, converter.toDto(savedTask), "Новая задача успешно создана");
+        return  converter.toDto(savedTask);
 
     }
 
 
-    public GeneralResponse<TaskResponseDto> deleteTaskById(Integer id) {
+    public TaskResponseDto deleteTaskById(Integer id) {
 
         Optional<Task> taskByIdOptional = repository.deleteTaskById(id);
 
         if (taskByIdOptional.isEmpty()) {
-            return new GeneralResponse<>(HttpStatus.NOT_FOUND, null, "Задача с id = " + id + " не найдена");
+            throw new NotFoundException("Задача с id = " + id + " не найдена");
         } else {
-            return new GeneralResponse<>(HttpStatus.OK, converter.toDto(taskByIdOptional.get()), "Задача с id = " + id + " успешно удалена ");
+            return converter.toDto(taskByIdOptional.get());
         }
 
 
     }
 
-    public GeneralResponse<List<TaskResponseDto>> getAllTasksAdmin() {
+    public List<TaskResponseDto> getAllTasksAdmin() {
         List<Task> allTasks = repository.findAll();
         List<TaskResponseDto> response = converter.toDtos(allTasks);
-        return new GeneralResponse<>(HttpStatus.OK, response, "Список всех задач");
+        return response;
     }
 
-    public GeneralResponse<List<TaskResponseDto>> getAllTasksUser(Integer userId) {
+    public List<TaskResponseDto> getAllTasksUser(Integer userId) {
 
         Optional<User> userByIdOptional = service.getUserByIdForTaskService(userId);
 
         if (userByIdOptional.isEmpty()) {
-            return new GeneralResponse<>(HttpStatus.NOT_FOUND, null, "Пользователь с id = " + userId + " не найден");
+            throw new NotFoundException("Пользователь с id = " + userId + " не найден");
 
         } else {
 
@@ -117,67 +119,67 @@ public class TaskService {
 
             List<TaskResponseDto> response = converter.toDtos(allTasksByUser);
 
-            return new GeneralResponse<>(HttpStatus.OK, response, "Список всех задач для пользователя с id = " + userId);
+            return response;
         }
     }
 
 
-    public GeneralResponse<TaskResponseDto> getTaskById(Integer taskId){
+    public TaskResponseDto getTaskById(Integer taskId){
         Optional<Task> taskByIdOptional = repository.findById(taskId);
 
         if (taskByIdOptional.isEmpty()) {
-            return new GeneralResponse<>(HttpStatus.NOT_FOUND, null, "Задача с id = " + taskId + " не найдена");
+            throw new NotFoundException("Задача с id = " + taskId + " не найдена");
         } else {
-            return new GeneralResponse<>(HttpStatus.OK, converter.toDto(taskByIdOptional.get()), "Задача с id = " + taskId);
+            return converter.toDto(taskByIdOptional.get());
         }
 
     }
 
-    public GeneralResponse<List<TaskResponseDto>> getTasksWithExpireDeadline() {
+    public List<TaskResponseDto> getTasksWithExpireDeadline() {
         LocalDate today = LocalDate.now();
 
         List<Task> tasksWithExpireDeadline = repository.findByDeadlineBefore(today);
 
         List<TaskResponseDto> response = converter.toDtos(tasksWithExpireDeadline);
 
-        return new GeneralResponse<>(HttpStatus.OK, response, "Список просроченных задач");
+        return  response;
     }
 
-    public GeneralResponse<List<TaskResponseDto>> getTasksByDateAfter(String date) {
+    public List<TaskResponseDto> getTasksByDateAfter(String date) {
         LocalDate searchDate = LocalDate.parse(date);
 
         List<Task> tasksWithExpireDeadline = repository.findByDeadlineAfter(searchDate);
 
         List<TaskResponseDto> response = converter.toDtos(tasksWithExpireDeadline);
 
-        return new GeneralResponse<>(HttpStatus.OK, response, "Список задач со сроком выполнения после " + date);
+        return response;
     }
 
-    public GeneralResponse<List<TaskResponseDto>> getTasksByDateBefore(String date) {
+    public List<TaskResponseDto> getTasksByDateBefore(String date) {
         LocalDate searchDate = LocalDate.parse(date);
 
         List<Task> tasksWithExpireDeadline = repository.findByDeadlineBefore(searchDate);
 
         List<TaskResponseDto> response = converter.toDtos(tasksWithExpireDeadline);
 
-        return new GeneralResponse<>(HttpStatus.OK, response, "Список задач со сроком выполнения до " + date);
+        return response;
     }
 
 
-    public GeneralResponse<List<TaskResponseDto>> getTasksByTaskNameContent(String taskName){
+    public List<TaskResponseDto> getTasksByTaskNameContent(String taskName){
 
         List<Task> tasksByTaskName = repository.findByTaskNameContainingIgnoreCase(taskName);
 
         List<TaskResponseDto> response = converter.toDtos(tasksByTaskName);
 
-        return new GeneralResponse<>(HttpStatus.OK, response, "Список задач названием, содержащим " + taskName);
+        return response;
     }
 
-    public GeneralResponse<String> updateTaskStatus(Integer taskId, StatusUpdateRequest request) {
+    public String updateTaskStatus(Integer taskId, StatusUpdateRequest request) {
         Optional<Task> taskByIdOptional = repository.findById(taskId);
 
         if (taskByIdOptional.isEmpty()) {
-            return new GeneralResponse<>(HttpStatus.NOT_FOUND, null, "Задача с id = " + taskId + " не найдена");
+            throw new NotFoundException("Задача с id = " + taskId + " не найдена");
         } else {
             TaskStatus newStatus = TaskStatus.valueOf(request.getStatus());
 
@@ -187,7 +189,7 @@ public class TaskService {
 
             repository.save(task);
 
-            return new GeneralResponse<>(HttpStatus.OK, "Статус успешно изменен", "Задача с id = " + taskId);
+            return "Статус успешно изменен";
         }
     }
 
