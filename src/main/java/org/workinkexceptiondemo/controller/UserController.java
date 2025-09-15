@@ -23,34 +23,27 @@ public class UserController {
 
     // Создать пользователя
     @PostMapping
-    public GeneralResponse<UserResponseDto> create(@RequestBody UserRequestDto request){
+    public UserResponseDto create(@RequestBody UserRequestDto request){
         return service.createUser(request);
     }
 
-
-    // Получить всех пользователей (пользовательский режим)
-//    @GetMapping
-//    public GeneralResponse<List<UserResponseDto>> getAll(){
-//        return service.getAll();
-//    }
-
     // Получить всех пользователей (пользовательский режим)
     @GetMapping("/admin")
-    public GeneralResponse<List<User>> getAllForAdmin(){
+    public List<User> getAllForAdmin(){
         return service.getAllUsersAdmin();
     }
 
 
     // Получить пользователя по id
     @GetMapping("/{id}")
-    public GeneralResponse<UserResponseDto> getById(@PathVariable Integer id) {
+    public UserResponseDto getById(@PathVariable Integer id) {
         return service.getUserById(id);
     }
 
 
     // Обновить пользователя по id (на основе данных из UserUpdateRequestDto)
     @PutMapping("/{id}")
-    public GeneralResponse<UserResponseDto> update(@RequestBody UserUpdateRequestDto updateRequest){
+    public UserResponseDto update(@RequestBody UserUpdateRequestDto updateRequest){
         return service.updateUser(updateRequest);
     }
 
@@ -60,7 +53,7 @@ public class UserController {
     // /api/users?username=...
 
     @GetMapping()
-    public GeneralResponse<List<UserResponseDto>> getAllUsersByParameter(
+    public List<UserResponseDto> getAllUsersByParameter(
             @RequestParam(value = "role", required = false) String role,
             @RequestParam(value = "username", required = false) String username
     ) {
