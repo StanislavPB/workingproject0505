@@ -88,7 +88,7 @@ public class UserService {
         Optional<User> userForUpdateOptional = repository.findById(updateRequest.getId());
 
         if (userForUpdateOptional.isEmpty()) {
-            return new GeneralResponse<>(HttpStatus.NOT_FOUND, null, "Пользователь с id = " + updateRequest.getId() + " не найден");
+           throw new NotFoundException("Пользователь с id = " + updateRequest.getId() + " не найден");
         }
 
         User userForUpdate = userForUpdateOptional.get();
@@ -111,34 +111,16 @@ public class UserService {
 
 
 
-    public GeneralResponse<List<User>> getAllUsersAdmin(){
-        return new GeneralResponse<>(HttpStatus.OK, repository.findAll(), "Список всех пользователей (режим администратора)");
+    public List<User> getAllUsersAdmin(){
+        return  repository.findAll());
     }
 
 
-    public GeneralResponse<List<UserResponseDto>> getAll() {
+    public List<UserResponseDto> getAll() {
 
-//        List<UserResponseDto> response = new ArrayList<>();
-//        List<User> users = userRepository.findAll();
-//
-//        for (User currentUser : users) {
-//            UserResponseDto currentResponse = converter.toDto(currentUser);
-//            response.add(currentResponse);
-//        }
-//
-//        return response;
 
-        List<UserResponseDto> response = converter.toDtos(repository.findAll());
+        return converter.toDtos(repository.findAll());
 
-        String message = "";
-
-        if (response.isEmpty()) {
-            message = "Список пользователей пуст";
-        } else {
-            message = "Список пользователей (режим пользователя)";
-        }
-
-        return new GeneralResponse<>(HttpStatus.OK, response, message);
     }
 
 
