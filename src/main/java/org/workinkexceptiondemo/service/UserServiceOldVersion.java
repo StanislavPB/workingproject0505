@@ -13,9 +13,7 @@ import org.workinkexceptiondemo.entity.Role;
 import org.workinkexceptiondemo.entity.User;
 import org.workinkexceptiondemo.repository.RoleRepository;
 import org.workinkexceptiondemo.repository.UserRepository;
-import org.workinkexceptiondemo.service.exception.AlreadyExistException;
 import org.workinkexceptiondemo.service.exception.NotFoundException;
-import org.workinkexceptiondemo.service.exception.ValidationException;
 import org.workinkexceptiondemo.service.util.UserConverter;
 import org.workinkexceptiondemo.service.validation.UserValidation;
 
@@ -23,30 +21,57 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-@Service
+// @Service
 @AllArgsConstructor
-public class UserService {
+public class UserServiceOldVersion {
 
     private final UserRepository repository;
     private final UserConverter converter;
     private final UserValidation userValidation;
     private final RoleRepository roleRepository;
 
-    public UserResponseDto createUser(UserRequestDto request) {
+    public GeneralResponse<UserResponseDto> createUser(UserRequestDto request){
 
-        // проверяем запрос на соответствие полученных данных нашим критериям
-        makeRequestValidation(request);
+        List<String> validationErrors = userValidation.validate(request);
 
-        // проверка на то что такого пользователя еще нет
-        makeAlreadyExistEmail(request.getEmail());
+        if (!validationErrors.isEmpty()) {
+            String errorMessage = "";
+            for (String currentError : validationErrors) {
+                errorMessage = errorMessage + "\n" + currentError;
+            }
+            return new GeneralResponse<>(HttpStatus.BAD_REQUEST, null, errorMessage);
+        }
 
-        // создание нового пользователя
+        Optional<User> userByEmailOptional = repository.findByEmail(request.getEmail());
+
+        if (userByEmailOptional.isPresent()) {
+            return new GeneralResponse<>(HttpStatus.BAD_REQUEST, null, "Пользователь с email: " + request.getEmail() + " уже существует");
+        }
+
         User user = converter.fromDto(request);
+        Optional<Role> defaultRoleOptional = roleRepository.findByRoleName("USER");
 
-        Role defaultRole = roleRepository.findByRoleName("USER")
-                .orElseThrow(() -> new NotFoundException("Default role not found in the database"));
+        // Role defRole = new Role("USER"); !!!!! ТАК ДЕЛАТЬ НЕЛЬЗЯ !!!!!
+        /*
+        1) при создании "нового" объекта вместо ссылки на существующий :
+        - new Role - создается новый объект, которого еще нет в базе
+        - при сохранении User через repository.save JPA попытается тоже сохранить новую роль, потому что она связана с user
 
-        user.setRole(defaultRole);
+        В результате появятся дубли наших ролей
+
+        -> Потеря согласованности данных
+        -> нарушение связей (при поиске "все пользователи с ролью USER == все пользователи с role_id=2")
+        -> потенциальные ошибки при маппинге JPA - если поле roleName должно быть уникальным, то при попытке
+        сохранить второго пользователя с новой ролью USER произойдет ошибка ConstraintViolationException
+         */
+
+
+        if (defaultRoleOptional.isEmpty()) {
+            throw new NotFoundException("Default role not found in the database");
+        } else {
+            Role defaultRole = defaultRoleOptional.get();
+            user.setRole(defaultRole);
+        }
 
         LocalDate today = LocalDate.now();
 
@@ -57,33 +82,14 @@ public class UserService {
 
         UserResponseDto response = converter.toDto(savedUser);
 
-        return  response;
+
+
+        return new GeneralResponse<>(HttpStatus.CREATED, response, "Новый пользователь успешно создан");
     }
 
 
-    private void makeRequestValidation(UserRequestDto request) {
-        List<String> validationErrors = userValidation.validate(request);
 
-        if (!validationErrors.isEmpty()) {
-            String errorMessage = "";
-            for (String currentError : validationErrors) {
-                errorMessage = errorMessage + "\n" + currentError;
-            }
-            throw new ValidationException(errorMessage);
-        }
-
-    }
-
-    private void makeAlreadyExistEmail(String email) {
-        Optional<User> userByEmailOptional = repository.findByEmail(email);
-
-        if (userByEmailOptional.isPresent()) {
-            throw new AlreadyExistException("Пользователь с email: " + email + " уже существует");
-        }
-    }
-
-
-    public UserResponseDto updateUser(UserUpdateRequestDto updateRequest){
+    public GeneralResponse<UserResponseDto> updateUser(UserUpdateRequestDto updateRequest){
 
         Optional<User> userForUpdateOptional = repository.findById(updateRequest.getId());
 
@@ -105,7 +111,7 @@ public class UserService {
 
         repository.save(userForUpdate);
 
-        return  converter.toDto(userForUpdate);
+        return new GeneralResponse<>(HttpStatus.OK, converter.toDto(userForUpdate), "Данные пользователя успешно изменены");
 
     }
 
