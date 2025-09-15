@@ -143,16 +143,12 @@ public class UserService {
         }
     }
 
-    public GeneralResponse<UserResponseDto> getUserByEmail(String email){
-        Optional<User> userByEmailOptional = repository.findByEmail(email);
+    public UserResponseDto getUserByEmail(String email){
 
-        if (userByEmailOptional.isPresent()) {
-            User userByEmail = userByEmailOptional.get();
-            UserResponseDto response = converter.toDto(userByEmail);
-            return new GeneralResponse<>(HttpStatus.OK, response, "Пользователь найден");
-        } else {
-            return new GeneralResponse<>(HttpStatus.NOT_FOUND, null, "Пользователь с email:  " + email + " не найден");
-        }
+        return repository.findByEmail(email)
+                .map(user -> converter.toDto(user))
+                .orElseThrow(() -> new NotFoundException("Пользователь с email:  " + email + " не найден"));
+
     }
 
 
