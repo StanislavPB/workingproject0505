@@ -25,7 +25,7 @@ public class UserConverter {
         response.setId(user.getId());
         response.setUserName(user.getUserName());
         response.setEmail(user.getEmail());
-        response.setRole(user.getRole().name());
+        response.setRole(user.getRole().getRoleName());
 
         return response;
     }
