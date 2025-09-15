@@ -112,7 +112,7 @@ public class UserService {
 
 
     public List<User> getAllUsersAdmin(){
-        return  repository.findAll());
+        return  repository.findAll();
     }
 
 
@@ -152,45 +152,31 @@ public class UserService {
     }
 
 
-    public GeneralResponse<List<UserResponseDto>> getUserByRole(String role){
-        Role userRole = roleRepository.findByRoleName(role).get();
+    public List<UserResponseDto> getUserByRole(String role){
+
+        Role userRole = roleRepository.findByRoleName(role)
+                .orElseThrow((() -> new NotFoundException("Роль " + role + " не определена в системе")));
 
         List<User> usersByRole = repository.findByRole(userRole);
 
-        if (!usersByRole.isEmpty()) {
-           List<UserResponseDto> response = converter.toDtos(usersByRole);
-
-            return new GeneralResponse<>(HttpStatus.OK, response, "Пользователи с ролью: " + role);
-        } else {
-            return new GeneralResponse<>(HttpStatus.NOT_FOUND, null, "Пользователи с ролью:  " + role + " не найдены");
-        }
+        return converter.toDtos(usersByRole);
     }
 
-    public GeneralResponse<List<UserResponseDto>> getUserByUsername(String username){
+    public List<UserResponseDto> getUserByUsername(String username){
 
         List<User> usersByUsername= repository.findByUserName(username);
 
-
-        if (!usersByUsername.isEmpty()) {
-            List<UserResponseDto> response = converter.toDtos(usersByUsername);
-
-            return new GeneralResponse<>(HttpStatus.OK, response, "Пользователи с именем: " + username);
-        } else {
-            return new GeneralResponse<>(HttpStatus.NOT_FOUND, null, "Пользователи с именем:  " + username + " не найдены");
-        }
+        return converter.toDtos(usersByUsername);
     }
 
-    public GeneralResponse<UserResponseDto> deleteUser(Integer id){
+    public UserResponseDto deleteUser(Integer id){
 
-        Optional<User> userForDeleteOptional = repository.findById(id);
-
-        if (userForDeleteOptional.isEmpty()){
-            return new GeneralResponse<>(HttpStatus.NOT_FOUND, null, "Пользователь с id = " + id + " не найден");
-        }
-
-        repository.deleteById(id);
-
-        return new GeneralResponse<>(HttpStatus.OK, converter.toDto(userForDeleteOptional.get()), "Пользователь с id = " + id + " успешно удален");
-    }
+        return repository.findById(id)
+                .map(user -> {
+                    repository.deleteById(id);
+                    return converter.toDto(user);
+                })
+                .orElseThrow( () -> new NotFoundException("Пользователь с id = " + id + " не найден"));
+  }
 
 }
