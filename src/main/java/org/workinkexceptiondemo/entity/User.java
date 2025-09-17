@@ -3,11 +3,10 @@ package org.workinkexceptiondemo.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.workinkexceptiondemo.annotation.OurValidation;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -23,16 +22,17 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotBlank
+    @NotBlank(message = "User name must be not blank")
     private String userName;
 
     @NotBlank
     @Email
     private String email;
 
-    @NotBlank
-    @Size(min = 3, max = 15)
-    @Pattern(regexp = "[A-Za-z0-9]+")
+//    @NotBlank
+//    @Size(min = 3, max = 15, message = "User name length must be between from 3 to 15 characters")
+//    @Pattern(regexp = "[A-Za-z0-9]+", message = "User password can contain latin characters or digital only")
+    @OurValidation(message = "Пароль не соответствует критериям безопасности")
     private String password;
 
     // одна роль у пользователя
