@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <!--- добавляем первоначальные данные в таблицы -->
+
+    <changeSet id="insert.default.data.roles" author="author2">
+        <insert tableName="role">
+            <column name="role_name" value="ADMIN"></column>
+        </insert>
+        <insert tableName="role">
+            <column name="role_name" value="USER"></column>
+        </insert>
+    </changeSet>
+
+    <changeSet id="insert.default.data.user" author="author2">
+       <insert tableName="users">
+           <column name="user_name" value="Administrator"></column>
+           <column name="email" value="admin@company.com"></column>
+           <column name="password" value="Pass12345"></column>
+           <column name="role_id" value="1"></column>
+           <column name="create_date" valueDate="2025-09-17" />
+           <column name="last_update" valueDate="2025-09-17" />
+
+       </insert>
+    </changeSet>
+
+</databaseChangeLog>
