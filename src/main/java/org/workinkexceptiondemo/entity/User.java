@@ -32,7 +32,7 @@ public class User {
 
     @NotBlank
     @Size(min = 3, max = 15)
-    @Pattern(regexp = "[A-Za-z0-9]")
+    @Pattern(regexp = "[A-Za-z0-9]+")
     private String password;
 
     // одна роль у пользователя

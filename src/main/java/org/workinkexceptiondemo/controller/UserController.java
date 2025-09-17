@@ -4,6 +4,7 @@ package org.workinkexceptiondemo.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.workinkexceptiondemo.dto.GeneralResponse;
 import org.workinkexceptiondemo.dto.UserRequestDto;
@@ -23,21 +24,23 @@ public class UserController {
 
     // Создать пользователя
     @PostMapping
-    public UserResponseDto create(@RequestBody UserRequestDto request){
-        return service.createUser(request);
+    public ResponseEntity<UserResponseDto> create(@RequestBody UserRequestDto request){
+        return new ResponseEntity<>(service.createUser(request),HttpStatus.CREATED);
     }
 
     // Получить всех пользователей (пользовательский режим)
     @GetMapping("/admin")
-    public List<User> getAllForAdmin(){
-        return service.getAllUsersAdmin();
+    public ResponseEntity<List<User>> getAllForAdmin(){
+        return ResponseEntity.ok(service.getAllUsersAdmin());
     }
 
 
     // Получить пользователя по id
     @GetMapping("/{id}")
-    public UserResponseDto getById(@PathVariable Integer id) {
-        return service.getUserById(id);
+    public ResponseEntity<UserResponseDto> getById(@PathVariable Integer id) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(service.getUserById(id));
     }
 
 
