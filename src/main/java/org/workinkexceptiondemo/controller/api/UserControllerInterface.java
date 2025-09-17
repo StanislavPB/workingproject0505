@@ -1,4 +1,4 @@
-package org.workinkexceptiondemo.controller;
+package org.workinkexceptiondemo.controller.api;
 
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,7 +10,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.workinkexceptiondemo.controller.api.UserControllerInterface;
 import org.workinkexceptiondemo.dto.UserRequestDto;
 import org.workinkexceptiondemo.dto.UserResponseDto;
 import org.workinkexceptiondemo.dto.UserUpdateRequestDto;
@@ -21,39 +20,36 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
-@AllArgsConstructor
-public class UserController implements UserControllerInterface {
+public interface UserControllerInterface {
 
-    private final UserService service;
 
     // Создать пользователя
     @PostMapping
-    public ResponseEntity<UserResponseDto> create(@RequestBody UserRequestDto request){
-        return new ResponseEntity<>(service.createUser(request),HttpStatus.CREATED);
-    }
+    public ResponseEntity<UserResponseDto> create(@RequestBody UserRequestDto request);
 
     // Получить всех пользователей (пользовательский режим)
     @GetMapping("/admin")
-    public ResponseEntity<List<User>> getAllForAdmin(){
-        return ResponseEntity.ok(service.getAllUsersAdmin());
-    }
+    public ResponseEntity<List<User>> getAllForAdmin();
 
 
     // Получить пользователя по id
+    @Operation(summary = "Получить пользователя", description = "Возвращает информацию о пользователе по id")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Пользователь найден",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UserResponseDto.class))),
 
+            @ApiResponse(responseCode = "404", description = "Пользователь не найден",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = String.class)))
+    })
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponseDto> getById(@PathVariable Integer id) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(service.getUserById(id));
-    }
+    public ResponseEntity<UserResponseDto> getById(@PathVariable Integer id);
 
 
     // Обновить пользователя по id (на основе данных из UserUpdateRequestDto)
     @PutMapping("/{id}")
-    public UserResponseDto update(@RequestBody UserUpdateRequestDto updateRequest){
-        return service.updateUser(updateRequest);
-    }
+    public UserResponseDto update(@RequestBody UserUpdateRequestDto updateRequest);
 
 
     // найти пользователя по email
@@ -64,18 +60,7 @@ public class UserController implements UserControllerInterface {
     public List<UserResponseDto> getAllUsersByParameter(
             @RequestParam(value = "role", required = false) String role,
             @RequestParam(value = "username", required = false) String username
-    ) {
-
-        if (role != null && !role.isBlank()) {
-            return service.getUserByRole(role);
-        }
-        if (username != null && !username.isBlank()){
-            return service.getUserByUsername(username);
-        }
-
-        return service.getAll();
-
-    }
+    );
 
 
 }
