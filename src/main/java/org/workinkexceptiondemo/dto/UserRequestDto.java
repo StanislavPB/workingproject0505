@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.workinkexceptiondemo.annotation.OurValidation;
 
 @Data
 @AllArgsConstructor
@@ -21,9 +22,10 @@ public class UserRequestDto {
     @Email
     private String email;
 
-    @NotBlank
-    @Size(min = 3, max = 15)
-    @Pattern(regexp = "[A-Za-z0-9]+")
+//    @NotBlank
+//    @Size(min = 3, max = 15)
+//    @Pattern(regexp = "[A-Za-z0-9]+")
+    @OurValidation
     private String password;
 
 }

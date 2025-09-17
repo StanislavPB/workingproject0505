@@ -35,7 +35,7 @@ public class UserService {
     public UserResponseDto createUser(UserRequestDto request) {
 
         // проверяем запрос на соответствие полученных данных нашим критериям
-        makeRequestValidation(request);
+        //makeRequestValidation(request);
 
         // проверка на то что такого пользователя еще нет
         makeAlreadyExistEmail(request.getEmail());

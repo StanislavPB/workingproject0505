@@ -53,7 +53,7 @@ public class UserValidation {
         }
 
         if (stringField.length() < fieldLengthMin) {
-            errors.add(fieldName + " должно содержать не менее 3 символов");
+            errors.add(fieldName + " должно содержать не менее " + fieldLengthMin + " символов");
         }
 
     }
