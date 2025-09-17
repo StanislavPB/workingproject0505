@@ -3,6 +3,8 @@ package org.workinkexceptiondemo.service;
 
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.workinkexceptiondemo.dto.GeneralResponse;
@@ -24,7 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository repository;
@@ -32,7 +34,11 @@ public class UserService {
     private final UserValidation userValidation;
     private final RoleRepository roleRepository;
 
+    @Value("${my.service.role}")
+    private String roleByDefault;
+
     public UserResponseDto createUser(UserRequestDto request) {
+
 
         // проверяем запрос на соответствие полученных данных нашим критериям
         //makeRequestValidation(request);
@@ -43,7 +49,7 @@ public class UserService {
         // создание нового пользователя
         User user = converter.fromDto(request);
 
-        Role defaultRole = roleRepository.findByRoleName("USER")
+        Role defaultRole = roleRepository.findByRoleName(roleByDefault)
                 .orElseThrow(() -> new NotFoundException("Default role not found in the database"));
 
         user.setRole(defaultRole);
