@@ -2,6 +2,7 @@ package org.workinkexceptiondemo.controller;
 
 
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class UserController {
 
     // Создать пользователя
     @PostMapping
-    public ResponseEntity<UserResponseDto> create(@RequestBody UserRequestDto request){
+    public ResponseEntity<UserResponseDto> create(@Valid @RequestBody UserRequestDto request){
         return new ResponseEntity<>(service.createUser(request),HttpStatus.CREATED);
     }
 
