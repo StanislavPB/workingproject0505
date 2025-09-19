@@ -35,9 +35,10 @@ public class UserService {
     private final RoleRepository roleRepository;
 
     @Value("${my.service.role}")
-    private String roleByDefault;
+    private String roleByDefault = "";
 
     public UserResponseDto createUser(UserRequestDto request) {
+
 
 
         // проверяем запрос на соответствие полученных данных нашим критериям
